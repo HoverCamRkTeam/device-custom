@@ -289,6 +289,12 @@ elif [ $BUILD_TARGET == allsave ];then
 elif [ -f $NEW_BOARD_CONFIG ];then
     rm -f $BOARD_CONFIG
     ln -s $NEW_BOARD_CONFIG $BOARD_CONFIG
+	unset RK_PACKAGE_FILE
+	source $NEW_BOARD_CONFIG
+	if [[ x"$RK_PACKAGE_FILE" != x ]];then
+		PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+		ln -sf $PACK_TOOL_DIR/rockdev/$RK_PACKAGE_FILE $PACK_TOOL_DIR/rockdev/package-file
+	fi
 else
     echo "Can't found build config, please check again"
     usage
