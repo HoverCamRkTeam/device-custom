@@ -37,6 +37,7 @@ usage()
 	echo "cleanall           -clean uboot, kernel, rootfs, recovery"
 	echo "firmware           -pack all the image we need to boot up system"
 	echo "updateimg          -pack update image"
+	echo "sdbootimg          -pack sdboot image"
 	echo "save               -save images, patches, commands used to debug"
 	echo "default            -build all modules"
 }
@@ -187,6 +188,21 @@ function build_firmware(){
 	fi
 }
 
+function build_sdbootimg(){
+	IMAGE_PATH=$TOP_DIR/rockdev
+	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+
+	echo "Make sdboot.img"
+	cd $PACK_TOOL_DIR/rockdev && ./mksdbootimg.sh && cd -
+	mv $PACK_TOOL_DIR/rockdev/sdboot.img $IMAGE_PATH
+	if [ $? -eq 0 ]; then
+	   echo "Make sdboot image ok!"
+	else
+	   echo "Make sdboot image failed!"
+	   exit 1
+	fi
+}
+
 function build_updateimg(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
@@ -267,6 +283,9 @@ elif [ $BUILD_TARGET == debian ];then
     exit 0
 elif [ $BUILD_TARGET == updateimg ];then
     build_updateimg
+    exit 0
+elif [ $BUILD_TARGET == sdbootimg ];then
+    build_sdbootimg
     exit 0
 elif [ $BUILD_TARGET == all ];then
     build_all

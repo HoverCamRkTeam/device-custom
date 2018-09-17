@@ -18,6 +18,7 @@ USER_DATA_DIR=$TOP_DIR/device/rockchip/userdata/$RK_USERDATA_DIR
 MISC_IMG=$TOP_DIR/device/rockchip/rockimg/wipe_all-misc.img
 ROOTFS_IMG=$TOP_DIR/$RK_ROOTFS_IMG
 RECOVERY_IMG=$TOP_DIR/buildroot/output/$RK_CFG_RECOVERY/images/recovery.img
+IDBLOADER_IMG=$TOP_DIR/u-boot/idbloader.img
 TRUST_IMG=$TOP_DIR/u-boot/trust.img
 UBOOT_IMG=$TOP_DIR/u-boot/uboot.img
 BOOT_IMG=$TOP_DIR/kernel/$RK_BOOT_IMG
@@ -88,6 +89,15 @@ then
         echo "done."
 else
         echo -e "\e[31m error: $UBOOT_IMG not found! \e[0m"
+fi
+
+if [ -f $IDBLOADER_IMG ]
+then
+        echo -n "create idbloader.img..."
+        ln -s -f $IDBLOADER_IMG $ROCKDEV/idbloader.img
+        echo "done."
+else
+        echo -e "\e[31m error: $IDBLOADER_IMG not found! \e[0m"
 fi
 
 if [ -f $TRUST_IMG ]
