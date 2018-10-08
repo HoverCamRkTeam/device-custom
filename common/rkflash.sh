@@ -12,6 +12,7 @@ OEM=$ROCKDEV_DIR/oem.img
 MISC=$ROCKDEV_DIR/misc.img
 ROOTFS=$ROCKDEV_DIR/rootfs.img
 USERDATA=$ROCKDEV_DIR/userdata.img
+FIRMWARE=$ROCKDEV_DIR/update.img
 
 if [ ! -n "$1" ]
 then
@@ -28,11 +29,16 @@ then
 	sudo $UPGRADETOOL di -uboot $UBOOT
 	sudo $UPGRADETOOL di -trust $TRUST
 	sudo $UPGRADETOOL di -b $BOOT
-	sudo $UPGRADETOOL di -r $RECOVERY
-	sudo $UPGRADETOOL di -m $MISC
-	sudo $UPGRADETOOL di -oem $OEM
-	sudo $UPGRADETOOL di -userdata $USERDATA
 	sudo $UPGRADETOOL di -rootfs $ROOTFS
+#	sudo $UPGRADETOOL di -r $RECOVERY
+#	sudo $UPGRADETOOL di -m $MISC
+#	sudo $UPGRADETOOL di -oem $OEM
+#	sudo $UPGRADETOOL di -userdata $USERDATA
+fi
+
+if [ $FLASH_TYPE = firmware ]
+then
+	sudo $UPGRADETOOL uf $FIRMWARE
 fi
 
 if [ $FLASH_TYPE = loader ]
