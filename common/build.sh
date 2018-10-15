@@ -11,14 +11,21 @@ cd ../../..
 TOP_DIR=$(pwd)
 COMMON_DIR=$TOP_DIR/device/rockchip/common
 BOARD_CONFIG=$TOP_DIR/device/rockchip/.BoardConfig.mk
+CFG_DIR=$TOP_DIR/device/rockchip
 source $BOARD_CONFIG
 
 if [ ! -n "$1" ];then
 	echo "build all and save all as default"
 	BUILD_TARGET=allsave
 else
-	BUILD_TARGET="$1"
-	NEW_BOARD_CONFIG=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$1
+    BUILD_TARGET=$1
+    if [ -n "$2" ];then
+        NEW_BOARD_CONFIG=$TOP_DIR/device/rockchip/$2/$1
+        echo $NEW_BOARD_CONFIG
+    else 
+        NEW_BOARD_CONFIG=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$1
+        echo $NEW_BOARD_CONFIG
+    fi    
 fi
 
 usage()
@@ -40,6 +47,7 @@ usage()
 	echo "sdbootimg          -pack sdboot image"
 	echo "save               -save images, patches, commands used to debug"
 	echo "default            -build all modules"
+    echo "BoardConfig Board  -select Board and it's BoardConfig.mk   "
 }
 
 function build_uboot(){
@@ -306,16 +314,28 @@ elif [ $BUILD_TARGET == allsave ];then
     build_all_save
     exit 0
 elif [ -f $NEW_BOARD_CONFIG ];then
+    echo $NEW_BOARD_CONFIG
     rm -f $BOARD_CONFIG
     ln -s $NEW_BOARD_CONFIG $BOARD_CONFIG
 	unset RK_PACKAGE_FILE
+	unset RK_MKUPDATE_FILE
 	source $NEW_BOARD_CONFIG
 	if [[ x"$RK_PACKAGE_FILE" != x ]];then
-		PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
-		ln -sf $PACK_TOOL_DIR/rockdev/$RK_PACKAGE_FILE $PACK_TOOL_DIR/rockdev/package-file
+		PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
+        cd $PACK_TOOL_DIR
+		rm -f package-file
+        ln -sf $RK_PACKAGE_FILE package-file
+	fi
+    
+    if [[ x"$RK_MKUPDATE_FILE" != x ]];then
+		PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
+        cd $PACK_TOOL_DIR
+        rm -f mkupdate.sh
+		ln -sf $RK_MKUPDATE_FILE mkupdate.sh
 	fi
 else
     echo "Can't found build config, please check again"
     usage
     exit 1
 fi
+
