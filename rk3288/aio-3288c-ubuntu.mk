@@ -13,7 +13,7 @@ export RK_BOOT_IMG=zboot.img
 # parameter for GPT table
 export RK_PARAMETER=parameter-ubuntu.txt
 # packagefile for pack image files
-export RK_PACKAGE_FILE=rk3288-package-file
+export RK_PACKAGE_FILE=rk3288-ubuntu-package-file
 # mkupdate for package updateimg
 export RK_MKUPDATE_FILE=rk3288-mkupdate.sh
 # Buildroot config
