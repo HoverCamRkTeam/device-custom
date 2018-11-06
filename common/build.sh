@@ -18,14 +18,8 @@ if [ ! -n "$1" ];then
 	echo "build all and save all as default"
 	BUILD_TARGET=allsave
 else
-    BUILD_TARGET=$1
-    if [ -n "$2" ];then
-        NEW_BOARD_CONFIG=$TOP_DIR/device/rockchip/$2/$1
-        echo $NEW_BOARD_CONFIG
-    else 
-        NEW_BOARD_CONFIG=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$1
-        echo $NEW_BOARD_CONFIG
-    fi    
+	BUILD_TARGET=$1
+   	NEW_BOARD_CONFIG=$(find $CFG_DIR -name "$1")
 fi
 
 usage()
@@ -314,6 +308,14 @@ elif [ $BUILD_TARGET == allsave ];then
     build_all_save
     exit 0
 elif [ -f $NEW_BOARD_CONFIG ];then
+    if [ ! -n "$NEW_BOARD_CONFIG" ];then
+	    echo "==============================="
+	    echo "ERR:  $1 not found  "
+    	    echo "Can't found build config, please check again"
+	    echo "ls device/rockchip/rkxxxx"
+	    usage
+	    exit 1
+	fi
     echo $NEW_BOARD_CONFIG
     rm -f $BOARD_CONFIG
     ln -s $NEW_BOARD_CONFIG $BOARD_CONFIG
@@ -333,9 +335,6 @@ elif [ -f $NEW_BOARD_CONFIG ];then
         rm -f mkupdate.sh
 		ln -sf $RK_MKUPDATE_FILE mkupdate.sh
 	fi
-else
-    echo "Can't found build config, please check again"
-    usage
-    exit 1
+    exit 0
 fi
 
