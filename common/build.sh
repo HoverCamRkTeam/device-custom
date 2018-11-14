@@ -329,11 +329,12 @@ elif [ -f $NEW_BOARD_CONFIG ];then
         ln -sf $RK_PACKAGE_FILE package-file
 	fi
     
-    if [[ x"$RK_MKUPDATE_FILE" != x ]];then
+    MKUPDATE_FILE=${RK_TARGET_PRODUCT}-mkupdate.sh
+    if [[ x"$MKUPDATE_FILE" != x-mkupdate.sh ]];then
 		PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
         cd $PACK_TOOL_DIR
         rm -f mkupdate.sh
-		ln -sf $RK_MKUPDATE_FILE mkupdate.sh
+		ln -sf $MKUPDATE_FILE mkupdate.sh
 	fi
     exit 0
 fi
