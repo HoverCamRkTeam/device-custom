@@ -12,8 +12,12 @@ export RK_KERNEL_DTS=rk3399-firefly-aio
 export RK_BOOT_IMG=boot.img
 # parameter for GPT table
 export RK_PARAMETER=parameter-ubuntu.txt
+# sd_parameter for GPT table
+export RK_SD_PARAMETER=parameter-recovery.txt
 # packagefile for make update image 
 export RK_PACKAGE_FILE=rk3399-ubuntu-package-file
+# packagefile for make sdupdate image
+export RK_SD_PACKAGE_FILE=rk3399-recovery-package-file
 # Buildroot config
 export RK_CFG_BUILDROOT=rockchip_rk3399
 # Recovery config

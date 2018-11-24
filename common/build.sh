@@ -12,7 +12,10 @@ TOP_DIR=$(pwd)
 COMMON_DIR=$TOP_DIR/device/rockchip/common
 BOARD_CONFIG=$TOP_DIR/device/rockchip/.BoardConfig.mk
 CFG_DIR=$TOP_DIR/device/rockchip
+ROCKDEV=$TOP_DIR/rockdev
 source $BOARD_CONFIG
+PARAMETER=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$RK_PARAMETER
+SD_PARAMETER=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$RK_SD_PARAMETER
 
 if [ ! -n "$1" ];then
 	echo "build all and save all as default"
@@ -39,6 +42,7 @@ usage()
 	echo "firmware           -pack all the image we need to boot up system"
 	echo "updateimg          -pack update image"
 	echo "sdbootimg          -pack sdboot image"
+	echo "sdupdateimg        -pack sdupdate image"
 	echo "save               -save images, patches, commands used to debug"
 	echo "default            -build all modules"
     echo "BoardConfig Board  -select Board and it's BoardConfig.mk   "
@@ -220,6 +224,55 @@ function build_updateimg(){
 	fi
 }
 
+function build_sdupdateimg(){
+        IMAGE_PATH=$TOP_DIR/rockdev
+        PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+
+        echo "Make sdupdate.img"
+	if [ -f $SD_PARAMETER ]
+	then
+        	echo -n "create parameter..."
+        	ln -s -f $SD_PARAMETER $ROCKDEV/parameter.txt
+        	echo "done."
+	else
+        	echo -e "\e[31m error: $SD_PARAMETER not found! \e[0m"
+	fi
+	
+        if [[ x"$RK_SD_PACKAGE_FILE" != x ]];then
+                RK_PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
+        cd $RK_PACK_TOOL_DIR
+                rm -f package-file
+        ln -sf $RK_SD_PACKAGE_FILE package-file
+        fi
+	
+	MKSDUPDATE_FILE=${RK_TARGET_PRODUCT}-mksdupdate.sh
+	if [[ x"$MKSDUPDATE_FILE" != x-mksdupdate.sh ]];then
+	rm -f mksdupdate.sh
+		ln -s $MKSDUPDATE_FILE mksdupdate.sh
+	fi
+
+        cd $PACK_TOOL_DIR/rockdev && ./mksdupdate.sh && cd -
+        mv $PACK_TOOL_DIR/rockdev/sdupdate.img $IMAGE_PATH
+        if [ $? -eq 0 ]; then
+           echo "Make sdupdate image ok!"
+        else
+           echo "Make sdupdate image failed!"
+        fi
+
+        if [ -f $PARAMETER ]
+        then
+                ln -s -f $PARAMETER $ROCKDEV/parameter.txt
+        fi
+
+	if [[ x"$RK_PACKAGE_FILE" != x ]];then
+                RK_PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
+        cd $RK_PACK_TOOL_DIR
+                rm -f package-file
+        ln -sf $RK_PACKAGE_FILE package-file
+        fi
+        exit 1
+}
+
 function build_save(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	DATE=$(date  +%Y%m%d.%H%M)
@@ -289,6 +342,9 @@ elif [ $BUILD_TARGET == updateimg ];then
 elif [ $BUILD_TARGET == sdbootimg ];then
     build_sdbootimg
     exit 0
+elif [ $BUILD_TARGET == sdupdateimg ];then
+    build_sdupdateimg
+    exit 0
 elif [ $BUILD_TARGET == all ];then
     build_all
     exit 0
@@ -329,7 +385,7 @@ elif [ -f $NEW_BOARD_CONFIG ];then
         ln -sf $RK_PACKAGE_FILE package-file
 	fi
     
-    MKUPDATE_FILE=${RK_TARGET_PRODUCT}-mkupdate.sh
+    MKUPDATE_FILE=${RK_TARGET_PRODUCT}-mkupdate.sh 
     if [[ x"$MKUPDATE_FILE" != x-mkupdate.sh ]];then
 		PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
         cd $PACK_TOOL_DIR
