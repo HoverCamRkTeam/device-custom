@@ -30,6 +30,7 @@ usage()
 	echo "====USAGE: build.sh modules===="
 	echo "uboot              -build uboot"
 	echo "kernel             -build kernel"
+	echo "extboot			 -build extlinux boot.img, boot from EFI partition"
 	echo "rootfs             -build default rootfs, currently build buildroot as default"
 	echo "buildroot          -build buildroot rootfs"
 	echo "yocto              -build yocto rootfs, currently build ros as default"
@@ -46,6 +47,32 @@ usage()
 	echo "save               -save images, patches, commands used to debug"
 	echo "default            -build all modules"
     echo "BoardConfig Board  -select Board and it's BoardConfig.mk   "
+}
+
+function build_extboot_image() {
+
+    build_kernel
+
+	BOOT=${TOP_DIR}/kernel/extboot.img
+	rm -rf ${BOOT}
+
+	echo -e "\e[36m Generate extLinuxBoot image start\e[0m"
+
+	# 100 Mb
+	mkfs.vfat -n "boot" -S 512 -C ${BOOT} $((20 * 1024))
+
+    echo "label kernel-4.4" > temp.conf
+    echo "    kernel /Image" >> temp.conf
+    echo "    fdt /${RK_KERNEL_DTS}.dtb" >> temp.conf
+
+	mmd -i ${BOOT} ::/extlinux
+	mcopy -i ${BOOT} -s temp.conf ::/extlinux/extlinux.conf
+	mcopy -i ${BOOT} -s ${TOP_DIR}/kernel/arch/${RK_ARCH}/boot/dts/rockchip/${RK_KERNEL_DTS}.dtb ::
+	mcopy -i ${BOOT} -s ${TOP_DIR}/kernel/arch/${RK_ARCH}/boot/Image ::
+
+    rm temp.conf
+
+	echo -e "\e[36m Generate extLinux Boot image : ${BOOT} success! \e[0m"
 }
 
 function build_uboot(){
@@ -197,10 +224,13 @@ function build_firmware(){
 function build_sdbootimg(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+    CONFFILENAME=$(basename $(readlink ${BOARD_CONFIG}))
+    CURDATE=`date "+%Y%m%d%H%M%S"`
+    IMGNAME=${CONFFILENAME%%.mk}_SDBOOT_${CURDATE}.img
 
 	echo "Make sdboot.img"
 	cd $PACK_TOOL_DIR/rockdev && ./mksdbootimg.sh && cd -
-	mv $PACK_TOOL_DIR/rockdev/sdboot.img $IMAGE_PATH
+	mv $PACK_TOOL_DIR/rockdev/sdboot.img $IMAGE_PATH/$IMGNAME
 	if [ $? -eq 0 ]; then
 	   echo "Make sdboot image ok!"
 	else
@@ -212,10 +242,13 @@ function build_sdbootimg(){
 function build_updateimg(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+    CONFFILENAME=$(basename $(readlink ${BOARD_CONFIG}))
+    CURDATE=`date "+%Y%m%d%H%M%S"`
+    IMGNAME=${CONFFILENAME%%.mk}_${CURDATE}.img
 
 	echo "Make update.img"
 	cd $PACK_TOOL_DIR/rockdev && ./mkupdate.sh && cd -
-	mv $PACK_TOOL_DIR/rockdev/update.img $IMAGE_PATH
+	mv $PACK_TOOL_DIR/rockdev/update.img $IMAGE_PATH/$IMGNAME
 	if [ $? -eq 0 ]; then
 	   echo "Make update image ok!"
 	else
@@ -225,52 +258,56 @@ function build_updateimg(){
 }
 
 function build_sdupdateimg(){
-        IMAGE_PATH=$TOP_DIR/rockdev
-        PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+	IMAGE_PATH=$TOP_DIR/rockdev
+	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
+    CONFFILENAME=$(basename $(readlink ${BOARD_CONFIG}))
+    CURDATE=`date "+%Y%m%d%H%M%S"`
+    IMGNAME=${CONFFILENAME%%.mk}_SDUPDATE_${CURDATE}.img
 
-        echo "Make sdupdate.img"
+	echo "Make sdupdate.img"
 	if [ -f $SD_PARAMETER ]
 	then
-        	echo -n "create parameter..."
-        	ln -s -f $SD_PARAMETER $ROCKDEV/parameter.txt
-        	echo "done."
+		echo -n "create parameter..."
+		ln -s -f $SD_PARAMETER $ROCKDEV/parameter.txt
+		echo "done."
 	else
-        	echo -e "\e[31m error: $SD_PARAMETER not found! \e[0m"
+		echo -e "\e[31m error: $SD_PARAMETER not found! \e[0m"
+		exit 1
 	fi
-	
-        if [[ x"$RK_SD_PACKAGE_FILE" != x ]];then
-                RK_PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
-        cd $RK_PACK_TOOL_DIR
-                rm -f package-file
-        ln -sf $RK_SD_PACKAGE_FILE package-file
-        fi
-	
+
+	if [[ x"$RK_SD_PACKAGE_FILE" != x ]];then
+		RK_PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
+		cd $RK_PACK_TOOL_DIR
+		rm -f package-file
+		ln -sf $RK_SD_PACKAGE_FILE package-file
+	fi
+
 	MKSDUPDATE_FILE=${RK_TARGET_PRODUCT}-mksdupdate.sh
 	if [[ x"$MKSDUPDATE_FILE" != x-mksdupdate.sh ]];then
-	rm -f mksdupdate.sh
+		rm -f mksdupdate.sh
 		ln -s $MKSDUPDATE_FILE mksdupdate.sh
 	fi
 
-        cd $PACK_TOOL_DIR/rockdev && ./mksdupdate.sh && cd -
-        mv $PACK_TOOL_DIR/rockdev/sdupdate.img $IMAGE_PATH
-        if [ $? -eq 0 ]; then
-           echo "Make sdupdate image ok!"
-        else
-           echo "Make sdupdate image failed!"
-        fi
+	cd $PACK_TOOL_DIR/rockdev && ./mksdupdate.sh && cd -
+	mv $PACK_TOOL_DIR/rockdev/sdupdate.img $IMAGE_PATH/$IMGNAME
 
-        if [ -f $PARAMETER ]
-        then
-                ln -s -f $PARAMETER $ROCKDEV/parameter.txt
-        fi
+	if [ $? -eq 0 ]; then
+	   echo "Make sdupdate image ok!"
+	else
+	   echo "Make sdupdate image failed!"
+	fi
+
+	if [ -f $PARAMETER ]
+	then
+		ln -s -f $PARAMETER $ROCKDEV/parameter.txt
+	fi
 
 	if [[ x"$RK_PACKAGE_FILE" != x ]];then
-                RK_PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
-        cd $RK_PACK_TOOL_DIR
-                rm -f package-file
-        ln -sf $RK_PACKAGE_FILE package-file
-        fi
-        exit 1
+		RK_PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware/rockdev/
+		cd $RK_PACK_TOOL_DIR
+		rm -f package-file
+		ln -sf $RK_PACKAGE_FILE package-file
+	fi
 }
 
 function build_save(){
@@ -314,6 +351,9 @@ if [ $BUILD_TARGET == uboot ];then
     exit 0
 elif [ $BUILD_TARGET == kernel ];then
     build_kernel
+    exit 0
+elif [ $BUILD_TARGET == extboot ];then
+    build_extboot_image
     exit 0
 elif [ $BUILD_TARGET == rootfs ];then
     build_rootfs
