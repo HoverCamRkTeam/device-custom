@@ -7,14 +7,14 @@ export RK_UBOOT_DEFCONFIG=firefly-rk3288
 # Kernel defconfig
 export RK_KERNEL_DEFCONFIG=firefly_linux_defconfig
 # Kernel dts
-export RK_KERNEL_DTS=rk3288-firefly-aio
+export RK_KERNEL_DTS=rk3288-firefly-aioc
 # boot image type
 export RK_BOOT_IMG=zboot.img
 # parameter for GPT table
 export RK_PARAMETER=parameter-ubuntu.txt
 # packagefile for pack image files
 export RK_PACKAGE_FILE=rk3288-ubuntu-package-file
-# mkupdate for package updateimg                                                                                                           
+# mkupdate for package updateimg
 export RK_MKUPDATE_FILE=rk3288-mkupdate.sh
 # Buildroot config
 export RK_CFG_BUILDROOT=rockchip_rk3288
@@ -29,7 +29,7 @@ export RK_TARGET_PRODUCT=rk3288
 # Set rootfs type, including ext2 ext4 squashfs
 export RK_ROOTFS_TYPE=ext4
 # rootfs image path
-export RK_ROOTFS_IMG=rootfs/ubuntu1604armhf-rootfs.img
+export RK_ROOTFS_IMG=buildroot/output/$RK_CFG_BUILDROOT/images/rootfs.$RK_ROOTFS_TYPE
 # Set oem partition type, including ext2 squashfs
 export RK_OEM_FS_TYPE=ext2
 # Set userdata partition type, including ext2, fat
