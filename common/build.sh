@@ -224,13 +224,10 @@ function build_firmware(){
 function build_sdbootimg(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
-    CONFFILENAME=$(basename $(readlink ${BOARD_CONFIG}))
-    CURDATE=`date "+%Y%m%d%H%M%S"`
-    IMGNAME=${CONFFILENAME%%.mk}_SDBOOT_${CURDATE}.img
-
+    
 	echo "Make sdboot.img"
 	cd $PACK_TOOL_DIR/rockdev && ./mksdbootimg.sh && cd -
-	mv $PACK_TOOL_DIR/rockdev/sdboot.img $IMAGE_PATH/$IMGNAME
+	mv $PACK_TOOL_DIR/rockdev/sdboot.img $IMAGE_PATH
 	if [ $? -eq 0 ]; then
 	   echo "Make sdboot image ok!"
 	else
@@ -242,13 +239,10 @@ function build_sdbootimg(){
 function build_updateimg(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
-    CONFFILENAME=$(basename $(readlink ${BOARD_CONFIG}))
-    CURDATE=`date "+%Y%m%d%H%M%S"`
-    IMGNAME=${CONFFILENAME%%.mk}_${CURDATE}.img
-
+    
 	echo "Make update.img"
 	cd $PACK_TOOL_DIR/rockdev && ./mkupdate.sh && cd -
-	mv $PACK_TOOL_DIR/rockdev/update.img $IMAGE_PATH/$IMGNAME
+	mv $PACK_TOOL_DIR/rockdev/update.img $IMAGE_PATH
 	if [ $? -eq 0 ]; then
 	   echo "Make update image ok!"
 	else
@@ -260,11 +254,7 @@ function build_updateimg(){
 function build_sdupdateimg(){
 	IMAGE_PATH=$TOP_DIR/rockdev
 	PACK_TOOL_DIR=$TOP_DIR/tools/linux/Linux_Pack_Firmware
-    CONFFILENAME=$(basename $(readlink ${BOARD_CONFIG}))
-    CURDATE=`date "+%Y%m%d%H%M%S"`
-    IMGNAME=${CONFFILENAME%%.mk}_SDUPDATE_${CURDATE}.img
-
-	echo "Make sdupdate.img"
+    	echo "Make sdupdate.img"
 	if [ -f $SD_PARAMETER ]
 	then
 		echo -n "create parameter..."
@@ -289,7 +279,7 @@ function build_sdupdateimg(){
 	fi
 
 	cd $PACK_TOOL_DIR/rockdev && ./mksdupdate.sh && cd -
-	mv $PACK_TOOL_DIR/rockdev/sdupdate.img $IMAGE_PATH/$IMGNAME
+	mv $PACK_TOOL_DIR/rockdev/sdupdate.img $IMAGE_PATH
 
 	if [ $? -eq 0 ]; then
 	   echo "Make sdupdate image ok!"
