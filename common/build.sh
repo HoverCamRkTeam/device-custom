@@ -230,6 +230,7 @@ function build_sdbootimg(){
 	mv $PACK_TOOL_DIR/rockdev/sdboot.img $IMAGE_PATH
 	if [ $? -eq 0 ]; then
 	   echo "Make sdboot image ok!"
+	   echo "Img_path:$IMAGE_PATH/sdboot.img"
 	else
 	   echo "Make sdboot image failed!"
 	   exit 1
@@ -245,6 +246,7 @@ function build_updateimg(){
 	mv $PACK_TOOL_DIR/rockdev/update.img $IMAGE_PATH
 	if [ $? -eq 0 ]; then
 	   echo "Make update image ok!"
+	   echo "Img_path:$IMAGE_PATH/update.img"
 	else
 	   echo "Make update image failed!"
 	   exit 1
@@ -283,6 +285,7 @@ function build_sdupdateimg(){
 
 	if [ $? -eq 0 ]; then
 	   echo "Make sdupdate image ok!"
+	   echo "Img_path:$IMAGE_PATH/sdupdate.img"
 	else
 	   echo "Make sdupdate image failed!"
 	fi
