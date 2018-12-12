@@ -13,7 +13,7 @@ COMMON_DIR=$TOP_DIR/device/rockchip/common
 BOARD_CONFIG=$TOP_DIR/device/rockchip/.BoardConfig.mk
 CFG_DIR=$TOP_DIR/device/rockchip
 ROCKDEV=$TOP_DIR/rockdev
-source $BOARD_CONFIG
+source $BOARD_CONFIG 2>/dev/null
 PARAMETER=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$RK_PARAMETER
 SD_PARAMETER=$TOP_DIR/device/rockchip/$RK_TARGET_PRODUCT/$RK_SD_PARAMETER
 
