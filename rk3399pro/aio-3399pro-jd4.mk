@@ -5,7 +5,6 @@ export RK_ARCH=arm64
 # Uboot defconfig
 export RK_UBOOT_DEFCONFIG=rk3399pro
 # Kernel defconfig
-#export RK_KERNEL_DEFCONFIG=rockchip_linux_defconfig
 export RK_KERNEL_DEFCONFIG=firefly3399pro_linux_defconfig
 # Kernel dts
 export RK_KERNEL_DTS=rk3399pro-firefly-aiojd4
@@ -15,6 +14,12 @@ export RK_BOOT_IMG=boot.img
 export RK_KERNEL_IMG=kernel/arch/arm64/boot/Image
 # parameter for GPT table
 export RK_PARAMETER=parameter-ubuntu.txt
+# recovery parameter for GPT table
+export RK_SD_PARAMETER=parameter-recovery.txt
+# packagefile for make update image 
+export RK_PACKAGE_FILE=rk3399-ubuntu-package-file
+# packagefile for make recovery image
+export RK_SD_PACKAGE_FILE=rk3399-recovery-package-file
 # Buildroot config
 export RK_CFG_BUILDROOT=rockchip_rk3399pro
 # Recovery config
