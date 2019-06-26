@@ -5,7 +5,8 @@ export RK_ARCH=arm64
 # Uboot defconfig
 export RK_UBOOT_DEFCONFIG=roc-rk3399-pc
 # Kernel defconfig
-export RK_KERNEL_DEFCONFIG=firefly_linux_defconfig
+#export RK_KERNEL_DEFCONFIG=firefly_linux_defconfig   		# enable wifi bt
+export RK_KERNEL_DEFCONFIG=firefly_roc-rk3399-pc_defconfig 	# build wifi bt modules and install in rootfs
 # Kernel dts
 export RK_KERNEL_DTS=rk3399-roc-pc
 # boot image type
