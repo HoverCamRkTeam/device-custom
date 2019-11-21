@@ -7,7 +7,7 @@ export RK_UBOOT_DEFCONFIG=firefly-rk3399
 # Kernel defconfig
 export RK_KERNEL_DEFCONFIG=firefly_linux_defconfig
 # Kernel dts
-export RK_KERNEL_DTS=rk3399-firefly-aioec
+export RK_KERNEL_DTS=rk3399-firefly-aioc-ai
 # boot image type
 export RK_BOOT_IMG=boot.img
 # parameter for GPT table
