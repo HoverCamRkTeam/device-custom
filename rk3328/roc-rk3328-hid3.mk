@@ -4,7 +4,7 @@ export RK_ARCH=arm64
 # Uboot defconfig
 export RK_UBOOT_DEFCONFIG=firefly-rk3328
 # Kernel defconfig
-export RK_KERNEL_DEFCONFIG=firefly_linux_defconfig
+export RK_KERNEL_DEFCONFIG=roc-rk3328-hid3_defconfig
 # Kernel dts
 export RK_KERNEL_DTS=rk3328-roc-hid3
 # boot image type
